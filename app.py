@@ -51,10 +51,10 @@ with st.form(key='form_raport', clear_on_submit=True):
     juz_pilihan = st.selectbox("Pilih Juz:", options=daftar_juz)
     surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
     
-    # Keterangan ayat (misal: "1-15")
+    # Keterangan detail ayat (misal: "1-15")
     ayat = st.text_input("Detail Ayat:", placeholder="Contoh: 1-10, atau Ayat Akhir")
     
-    # INPUTAN ANGKA UNTUK SISTEM PENILAIAN OTOMATIS
+    # Input jumlah ayat berupa angka untuk penilaian otomatis
     jumlah_ayat = st.number_input("Jumlah Ayat yang Dihafal (Angka):", min_value=1, max_value=300, step=1)
     
     submit_button = st.form_submit_button(label='SIMPAN NILAI')
@@ -65,7 +65,7 @@ if submit_button:
     elif ayat == "":
         st.error("Kolom Detail Ayat harus diisi, bro!")
     else:
-        # --- PROSES PENILAIAN OTOMATIS BERDASARKAN JUMLAH AYAT ---
+        # --- PROSES PENILAIAN OTOMATIS BERDASARKAN ANGKA JUMLAH AYAT ---
         if jumlah_ayat > 20:
             nilai_kelancaran = "Sangat Lancar (A)"
             catatan_selesai = "Masya Allah, tingkatkan terus prestasimu!"
@@ -75,7 +75,6 @@ if submit_button:
         else:
             nilai_kelancaran = "Cukup (C)"
             catatan_selesai = "Bagus, perbanyak murajaah lagi di rumah ya."
-        # --------------------------------------------------------
             
         # Proses Simpan ke Excel MDTA
         data_baru = {
@@ -96,11 +95,27 @@ if submit_button:
         else:
             df_baru.to_excel(nama_file, index=False)
             
-        # --- EFEK KEJUTAN SURPRISE BALON ---
+        # --- EFEK SURPRISE BALON TERBANG ---
         st.success(f"Data {nama} berhasil disimpan!")
         st.balloons()
         
         # Tampilkan Preview Hasil Sistem Otomatis di Layar Web
         st.markdown(f"**Nama Santri:** {nama}")
         st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat} ({jumlah_ayat} Ayat)")
-        st.markdown(f"**Hasil Kelancaran Otomatis:** {nilai_kelancaran
+        st.markdown(f"**Hasil Kelancaran Otomatis:** {nilai_kelancaran}")
+        st.markdown(f"**Setoran Hafalan Santri MDTA:** *\"{catatan_selesai}\"*")
+
+# --- TOMBOL DOWNLOAD DATA EXCEL ---
+st.write("---")
+st.subheader("📂 Download Data")
+
+if os.path.exists(nama_file):
+    with open(nama_file, "rb") as file:
+        st.download_button(
+            label="📥 DOWNLOAD FILE EXCEL KE HP",
+            data=file,
+            file_name="rekap_raport_mdta.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+else:
+    st.info("Belum ada data yang disimpan untuk di-download, bro.")
