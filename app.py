@@ -3,9 +3,9 @@ import pandas as pd
 import os
 
 # Set judul halaman web
-st.set_page_config(page_title="Nilai Hafalan Web", page_icon="📝", layout="centered")
+st.set_page_config(page_title="Nilai Hafalan", page_icon="📝", layout="centered")
 
-st.title("📝 Nilai Hafalan Santri MDTA ")
+st.title("📝 Nilai Hafalan Santriwan dan santriwati MDTA ")
 st.write("Aplikasi input nilai otomatis berbasis web.")
 
 nama_file = "data_raport_web.xlsx"
