@@ -3,9 +3,9 @@ import pandas as pd
 import os
 
 # Set judul halaman web
-st.set_page_config(page_title="Nilai Hafalan", page_icon="📝", layout="centered")
+st.set_page_config(page_title="Nilai Hafalan Santri MDTA", page_icon="📝", layout="centered")
 
-st.title("📝 Nilai Hafalan Santriwan dan santriwati MDTA ")
+st.title("📝 E-Raport RQIK - Input Nilai Tahfidz")
 st.write("Aplikasi input nilai otomatis berbasis web.")
 
 nama_file = "data_raport_web.xlsx"
@@ -35,6 +35,86 @@ daftar_surat = [
     "101. Al-Qari'ah", "102. At-Takasur", "103. Al-'Asr", "104. Al-Humazah", "105. Al-Fil",
     "106. Quraisy", "107. Al-Ma'un", "108. Al-Kausar", "109. Al-Kafirun", "110. An-Nasr",
     "111. Al-Masad", "112. Al-Ikhlas", "113. Al-Falaq", "114. An-Nas"
+]
+
+# Membuat daftar Juz 1 sampai Juz 30 otomatis
+daftar_juz = [f"Juz {i}" for i in range(1, 31)]
+
+# Membuat Form Input di Web
+with st.form(key='form_raport', clear_on_submit=True):
+    nama = st.text_input("Nama Santri:", placeholder="Ketik nama di sini...")
+    
+    juz_pilihan = st.selectbox("Pilih Juz:", options=daftar_juz)
+    
+    surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
+    
+    ayat = st.text_input("Ayat:", placeholder="Contoh: 1-10, atau Ayat Akhir")
+    
+    # --- TAMBAHAN DROPDOWN PENILAIAN ---
+    nilai_kelancaran = st.selectbox("Kelancaran Hafalan:", options=["Sangat Lancar (A)", "Lancar (B)", "Cukup (C)", "Kurang (D)"])
+    
+    # Tombol submit
+    submit_button = st.form_submit_button(label='SIMPAN NILAI')
+
+if submit_button:
+    if nama == "":
+        st.error("Nama santri gak boleh kosong, bro!")
+    elif ayat == "":
+        st.error("Kolom Ayat harus diisi, bro!")
+    else:
+        # --- POSISI PENGATURAN KATA-KATA MOTIVASI BERDASARKAN NILAI ---
+        if nilai_kelancaran == "Sangat Lancar (A)":
+            catatan_motivasi = "Masya Allah, tingkatkan terus prestasimu!"
+        elif nilai_kelancaran == "Lancar (B)":
+            catatan_motivasi = "Alhamdulillah, semangat lagi ya ngafalin nya!"
+        elif nilai_kelancaran == "Cukup (C)":
+            catatan_motivasi = "Bagus, perbanyak murajaah lagi di rumah ya."
+        else:
+            catatan_motivasi = "Kurang semangat ni, yuk lebih giat lagi setorannya!"
+        # --------------------------------------------------------------
+            
+        # Proses Simpan ke Excel dengan Format Kolom Baru
+        data_baru = {
+            "Nama Santri": [nama],
+            "Pilih Juz": [juz_pilihan],
+            "Nama Surah": [surah_pilihan],
+            "Ayat": [ayat],
+            "Nilai": [nilai_kelancaran],
+            "Catatan Motivasi": [catatan_motivasi]
+        }
+        df_baru = pd.DataFrame(data_baru)
+        
+        if os.path.exists(nama_file):
+            df_lama = pd.read_excel(nama_file)
+            df_total = pd.concat([df_lama, df_baru], ignore_index=True)
+            df_total.to_excel(nama_file, index=False)
+        else:
+            df_baru.to_excel(nama_file, index=False)
+            
+        # Tampilkan Notifikasi Sukses
+        st.success(f"Data {nama} berhasil disimpan!")
+        st.balloons() 
+        
+        # Tampilkan Preview Hasil Inputan Baru di Layar
+        st.markdown(f"**Nama Santri:** {nama}")
+        st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat}")
+        st.markdown(f"**Hasil Kelancaran:** {nilai_kelancaran}")
+        st.markdown(f"**Pesan Motivasi:** *\"{catatan_motivasi}\"*")
+
+# --- TOMBOL DOWNLOAD UNTUK HP/USER ---
+st.write("---")
+st.subheader("📂 Download Data")
+
+if os.path.exists(nama_file):
+    with open(nama_file, "rb") as file:
+        st.download_button(
+            label="📥 DOWNLOAD FILE EXCEL KE HP",
+            data=file,
+            file_name="rekap_raport_rqik.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+else:
+    st.info("Belum ada data yang disimpan untuk di-download, bro.")    "111. Al-Masad", "112. Al-Ikhlas", "113. Al-Falaq", "114. An-Nas"
 ]
 
 # Membuat daftar Juz 1 sampai Juz 30 otomatis
