@@ -2,13 +2,18 @@ import streamlit as st
 import pandas as pd
 import os
 
-# Set judul halaman web
-st.set_page_config(page_title="Nilai Hafalan Santri MDTA", page_icon="📝", layout="centered")
+# Set judul halaman web (muncul di tab browser & pratinjau WA)
+st.set_page_config(page_title="Hafalan Santri MDTA", page_icon="📝", layout="centered")
 
-st.title("📝 Nilai Setoran Hafalan Santri MDTA")
+# --- MENAMPILKAN LOGO MAJELIS ---
+if os.path.exists("logo_majelis.png"):
+    st.image("logo_majelis.png", width=100)
+
+# --- JUDUL UTAMA ---
+st.title("Nilai Hafalan Santri MDTA")
 st.write("Aplikasi input nilai otomatis berbasis web.")
 
-nama_file = "data_raport_web.xlsx"
+nama_file = "data_raport_mdta.xlsx"
 
 # Daftar 114 Nama Surat Al-Qur'an otomatis
 daftar_surat = [
@@ -45,10 +50,10 @@ with st.form(key='form_raport', clear_on_submit=True):
     nama = st.text_input("Nama Santri:", placeholder="Ketik nama di sini...")
     juz_pilihan = st.selectbox("Pilih Juz:", options=daftar_juz)
     surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
-    ayat = st.text_input("Ayat:", placeholder="")
+    ayat = st.text_input("Ayat:", placeholder="Contoh: 1-10, atau Ayat Akhir")
     
     # Dropdown penilaian kelancaran hafalan
-    nilai_kelancaran = st.selectbox("Kelancaran Hafalan:", options=["Sangat Lancar ", "Lancar ", "Cukup ", "Kurang "])
+    nilai_kelancaran = st.selectbox("Kelancaran Hafalan:", options=["Sangat Lancar (A)", "Lancar (B)", "Cukup (C)", "Kurang (D)"])
     
     submit_button = st.form_submit_button(label='SIMPAN NILAI')
 
@@ -58,24 +63,24 @@ if submit_button:
     elif ayat == "":
         st.error("Kolom Ayat harus diisi, bro!")
     else:
-        # --- KATA-KATA MOTIVASI BERDASARKAN INPUT NILAI ---
+        # --- LOGIKA KATA-KATA MOTIVASI ---
         if nilai_kelancaran == "Sangat Lancar (A)":
-            catatan_motivasi = "Masya Allah, tingkatkan terus prestasimu!"
+            catatan_selesai = "Masya Allah, tingkatkan terus prestasimu!"
         elif nilai_kelancaran == "Lancar (B)":
-            catatan_motivasi = "Alhamdulillah, semangat lagi ya ngafalin nya!"
+            catatan_selesai = "Alhamdulillah, semangat lagi ya ngafalin nya!"
         elif nilai_kelancaran == "Cukup (C)":
-            catatan_motivasi = "Bagus, perbanyak murajaah lagi di rumah ya."
+            catatan_selesai = "Bagus, perbanyak murajaah lagi di rumah ya."
         else:
-            catatan_selesai= ""
+            catatan_selesai = ""
             
-        # Proses Simpan ke Excel
+        # Proses Simpan ke Excel dengan nama kolom baru sesuai request
         data_baru = {
             "Nama Santri": [nama],
             "Pilih Juz": [juz_pilihan],
             "Nama Surah": [surah_pilihan],
             "Ayat": [ayat],
             "Nilai": [nilai_kelancaran],
-            "Catatan Motivasi": [catatan_motivasi]
+            "Setoran Hafalan Santri MDTA": [catatan_selesai]  # Judul kolom Excel sudah diganti
         }
         df_baru = pd.DataFrame(data_baru)
         
@@ -94,9 +99,11 @@ if submit_button:
         st.markdown(f"**Nama Santri:** {nama}")
         st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat}")
         st.markdown(f"**Hasil Kelancaran:** {nilai_kelancaran}")
-        st.markdown(f"**Pesan Motivasi:** *\"{catatan_motivasi}\"*")
+        
+        if catatan_selesai != "":
+            st.markdown(f"**Setoran Hafalan Santri MDTA:** *\"{catatan_selesai}\"*")
 
-# --- TOMBOL DOWNLOAD UNTUK HP/USER ---
+# --- TOMBOL DOWNLOAD DATA EXCEL ---
 st.write("---")
 st.subheader("📂 Download Data")
 
@@ -105,7 +112,7 @@ if os.path.exists(nama_file):
         st.download_button(
             label="📥 DOWNLOAD FILE EXCEL KE HP",
             data=file,
-            file_name="rekap_raport_rqik.xlsx",
+            file_name="rekap_raport_mdta.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 else:
