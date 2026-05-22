@@ -51,31 +51,26 @@ with st.form(key='form_raport', clear_on_submit=True):
     juz_pilihan = st.selectbox("Pilih Juz:", options=daftar_juz)
     surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
     
-    # INPUTAN MANUAL KELANCARAN HAFALAN KEMBALI DIKEMBALIKAN
-    nilai_kelancaran = st.selectbox("Kelancaran Hafalan:", options=["Sangat Lancar (A)", "Lancar (B)", "Cukup (C)", "Kurang (D)"])
+    # PERUBAHAN INPUTAN SESUAI REQUEST: DIUBAH JADI KOLOM KETIK MANUAL
+    jumlah_hafalan = st.text_input("Jumlah Hafalan / Sampe Mana:", placeholder="Contoh: Ayat 1-7, atau Sudah hafal setengah surah")
     
     submit_button = st.form_submit_button(label='SIMPAN NILAI')
 
 if submit_button:
     if nama == "":
         st.error("Nama santri gak boleh kosong, bro!")
+    elif jumlah_hafalan == "":
+        st.error("Kolom Jumlah Hafalan gak boleh kosong, bro!")
     else:
-        # --- LOGIKA KATA MOTIVASI OTOMATIS BERDASARKAN INPUT MANUAL ---
-        if nilai_kelancaran == "Sangat Lancar (A)":
-            catatan_selesai = "Masya Allah, tingkatkan terus prestasimu!"
-        elif nilai_kelancaran == "Lancar (B)":
-            catatan_selesai = "Alhamdulillah, semangat lagi ya ngafalin nya!"
-        elif nilai_kelancaran == "Cukup (C)":
-            catatan_selesai = "Bagus, perbanyak murajaah lagi di rumah ya."
-        else:
-            catatan_selesai = "" # Sesuai request sebelumnya, kalau Kurang (D) dikosongkan
+        # Pesan motivasi default yang otomatis muncul di file Excel
+        catatan_selesai = "Alhamdulillah, semangat terus ya hafalan nya!"
             
         # Proses Simpan ke Excel MDTA
         data_baru = {
             "Nama Santri": [nama],
             "Pilih Juz": [juz_pilihan],
             "Nama Surah": [surah_pilihan],
-            "Kelancaran Hafalan": [nilai_kelancaran],
+            "Jumlah Hafalan / Sampe Mana": [jumlah_hafalan],
             "Setoran Hafalan Santri MDTA": [catatan_selesai]
         }
         df_baru = pd.DataFrame(data_baru)
@@ -94,10 +89,8 @@ if submit_button:
         # Tampilkan Preview Hasil di Layar Web
         st.markdown(f"**Nama Santri:** {nama}")
         st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan}")
-        st.markdown(f"**Hasil Kelancaran:** {nilai_kelancaran}")
-        
-        if catatan_selesai != "":
-            st.markdown(f"**Setoran Hafalan Santri MDTA:** *\"{catatan_selesai}\"*")
+        st.markdown(f"**Hafalan / Sampe Mana:** {jumlah_hafalan}")
+        st.markdown(f"**Setoran Hafalan Santri MDTA:** *\"{catatan_selesai}\"*")
 
 # --- TOMBOL DOWNLOAD DATA EXCEL ---
 st.write("---")
