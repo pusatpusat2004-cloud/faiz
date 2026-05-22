@@ -45,10 +45,10 @@ with st.form(key='form_raport', clear_on_submit=True):
     nama = st.text_input("Nama Santri:", placeholder="Ketik nama di sini...")
     juz_pilihan = st.selectbox("Pilih Juz:", options=daftar_juz)
     surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
-    ayat = st.text_input("Ayat:", placeholder="Contoh: 1-10, atau Ayat Akhir")
+    ayat = st.text_input("Ayat:", placeholder="")
     
     # Dropdown penilaian kelancaran hafalan
-    nilai_kelancaran = st.selectbox("Kelancaran Hafalan:", options=["Sangat Lancar (A)", "Lancar (B)", "Cukup (C)", "Kurang (D)"])
+    nilai_kelancaran = st.selectbox("Kelancaran Hafalan:", options=["Sangat Lancar ", "Lancar ", "Cukup ", "Kurang "])
     
     submit_button = st.form_submit_button(label='SIMPAN NILAI')
 
