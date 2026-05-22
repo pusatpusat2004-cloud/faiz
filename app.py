@@ -3,7 +3,7 @@ import pandas as pd
 import os
 
 # Set judul halaman web
-st.set_page_config(page_title="E-Raport RQIK", page_icon="📝", layout="centered")
+st.set_page_config(page_title="Nilai Hafalan Web", page_icon="📝", layout="centered")
 
 st.title("📝 Nilai Hafalan Santri MDTA ")
 st.write("Aplikasi input nilai otomatis berbasis web.")
@@ -51,7 +51,7 @@ with st.form(key='form_raport', clear_on_submit=True):
     surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
     
     # INPUTAN AYAT
-    ayat = st.text_input("Ayat:", placeholder="Contoh: 1-10, atau Ayat Akhir")
+    ayat = st.text_input("Ayat:", placeholder="")
     
     # Tombol submit
     submit_button = st.form_submit_button(label='SIMPAN NILAI')
@@ -101,4 +101,4 @@ if os.path.exists(nama_file):
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 else:
-    st.info("Belum ada data yang disimpan untuk di-download, bro.")
+    st.info("Belum ada data yang disimpan untuk di-download.")
