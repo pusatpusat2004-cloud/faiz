@@ -5,7 +5,7 @@ import os
 # Set judul halaman web
 st.set_page_config(page_title="Nilai Hafalan Santri MDTA", page_icon="📝", layout="centered")
 
-st.title("📝 Nilai Setoran Hafalan Santri MADTA")
+st.title("📝 Nilai Setoran Hafalan Santri MDTA")
 st.write("Aplikasi input nilai otomatis berbasis web.")
 
 nama_file = "data_raport_web.xlsx"
