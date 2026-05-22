@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import os
+from datetime import datetime
+import pytz  # Untuk mengatur zona waktu Indonesia
 
 # Set judul halaman web (muncul di tab browser & pratinjau WA)
 st.set_page_config(page_title="Hafalan Santri MDTA", page_icon="📝", layout="centered")
@@ -50,8 +52,6 @@ with st.form(key='form_raport', clear_on_submit=True):
     nama = st.text_input("Nama Santri:", placeholder="Ketik nama di sini...")
     juz_pilihan = st.selectbox("Pilih Juz:", options=daftar_juz)
     surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
-    
-    # PERUBAHAN INPUTAN SESUAI REQUEST: DIUBAH JADI KOLOM KETIK MANUAL
     jumlah_hafalan = st.text_input("Jumlah Hafalan / Sampe Mana:", placeholder="Contoh: Ayat 1-7, atau Sudah hafal setengah surah")
     
     submit_button = st.form_submit_button(label='SIMPAN NILAI')
@@ -62,11 +62,18 @@ if submit_button:
     elif jumlah_hafalan == "":
         st.error("Kolom Jumlah Hafalan gak boleh kosong, bro!")
     else:
+        # --- FITUR BARU: MENGAMBIL TANGGAL DAN WAKTU OTOMATIS (WIB) ---
+        tz_jkt = pytz.timezone('Asia/Jakarta')
+        waktu_sekarang = datetime.now(tz_jkt)
+        # Format hasil tanggal: 23-05-2026 (Jam 10:15 WIB)
+        tanggal_input = waktu_sekarang.strftime("%d-%m-%Y (Jam %H:%M WIB)")
+        
         # Pesan motivasi default yang otomatis muncul di file Excel
         catatan_selesai = "Alhamdulillah, semangat terus ya hafalan nya!"
             
-        # Proses Simpan ke Excel MDTA
+        # Proses Simpan ke Excel MDTA (Sudah ditambah kolom Tanggal Setoran)
         data_baru = {
+            "Tanggal Setoran": [tanggal_input],
             "Nama Santri": [nama],
             "Pilih Juz": [juz_pilihan],
             "Nama Surah": [surah_pilihan],
@@ -87,6 +94,7 @@ if submit_button:
         st.balloons()
         
         # Tampilkan Preview Hasil di Layar Web
+        st.markdown(f"📅 **Waktu Input:** {tanggal_input}")
         st.markdown(f"**Nama Santri:** {nama}")
         st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan}")
         st.markdown(f"**Hafalan / Sampe Mana:** {jumlah_hafalan}")
