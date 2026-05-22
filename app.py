@@ -66,7 +66,7 @@ if submit_button:
         elif nilai_kelancaran == "Cukup (C)":
             catatan_motivasi = "Bagus, perbanyak murajaah lagi di rumah ya."
         else:
-            catatan_motivasi = "Kurang semangat ni, yuk lebih giat lagi setorannya!"
+            
             
         # Proses Simpan ke Excel
         data_baru = {
