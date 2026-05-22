@@ -26,7 +26,7 @@ daftar_surat = [
     "31. Luqman", "32. As-Sajdah", "33. Al-Ahzab", "34. Saba'", "35. Fatir",
     "36. Yasin", "37. As-Saffat", "38. Sad", "39. Az-Zumar", "40. Ghafir",
     "41. Fussilat", "42. Asy-Syura", "43. Az-Zukhruf", "44. Ad-Dukhan", "45. Al-Jasiyah",
-    "46. Al-Ahqaf", "47. Muhammad", "48. Al-Fath", "49. Al-Hujurat", "50. Qaf",
+    "46. Al-Ahqaf", "47. Muhammad", "50. Qaf", "48. Al-Fath", "49. Al-Hujurat", 
     "51. Az-Zariyat", "52. At-Tur", "53. An-Najm", "54. Al-Qamar", "55. Ar-Rahman",
     "56. Al-Waqi'ah", "57. Al-Hadid", "58. Al-Mujadilah", "59. Al-Hasyr", "60. Al-Mumtahanah",
     "61. As-Saff", "62. Al-Jumu'ah", "63. Al-Munafiqun", "64. At-Taghabun", "65. At-Talaq",
@@ -63,7 +63,7 @@ if submit_button:
     elif ayat == "":
         st.error("Kolom Ayat harus diisi, bro!")
     else:
-        # --- LOGIKA KATA-KATA MOTIVASI ---
+        # --- LOGIKA KATA-KATA MOTIVASI OTOMATIS ---
         if nilai_kelancaran == "Sangat Lancar (A)":
             catatan_selesai = "Masya Allah, tingkatkan terus prestasimu!"
         elif nilai_kelancaran == "Lancar (B)":
@@ -73,14 +73,14 @@ if submit_button:
         else:
             catatan_selesai = ""
             
-        # Proses Simpan ke Excel dengan nama kolom baru sesuai request
+        # Proses Simpan ke Excel MDTA
         data_baru = {
             "Nama Santri": [nama],
             "Pilih Juz": [juz_pilihan],
             "Nama Surah": [surah_pilihan],
             "Ayat": [ayat],
             "Nilai": [nilai_kelancaran],
-            "Setoran Hafalan Santri MDTA": [catatan_selesai]  # Judul kolom Excel sudah diganti
+            "Setoran Hafalan Santri MDTA": [catatan_selesai]
         }
         df_baru = pd.DataFrame(data_baru)
         
@@ -91,11 +91,11 @@ if submit_button:
         else:
             df_baru.to_excel(nama_file, index=False)
             
-        # Tampilkan Notifikasi Sukses
+        # --- EFEK SURPRISE BALON TERBANG ---
         st.success(f"Data {nama} berhasil disimpan!")
-        st.balloons() 
+        st.balloons()  # Ini yang bikin efek kejutan balon langsung muncul, bro!
         
-        # Tampilkan Preview Hasil Inputan Baru di Layar
+        # Tampilkan Preview Hasil Inputan di Layar
         st.markdown(f"**Nama Santri:** {nama}")
         st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat}")
         st.markdown(f"**Hasil Kelancaran:** {nilai_kelancaran}")
