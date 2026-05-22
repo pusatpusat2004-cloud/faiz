@@ -26,7 +26,7 @@ daftar_surat = [
     "31. Luqman", "32. As-Sajdah", "33. Al-Ahzab", "34. Saba'", "35. Fatir",
     "36. Yasin", "37. As-Saffat", "38. Sad", "39. Az-Zumar", "40. Ghafir",
     "41. Fussilat", "42. Asy-Syura", "43. Az-Zukhruf", "44. Ad-Dukhan", "45. Al-Jasiyah",
-    "46. Al-Ahqaf", "47. Muhammad", "50. Qaf", "48. Al-Fath", "49. Al-Hujurat", 
+    "46. Al-Ahqaf", "47. Muhammad", "48. Al-Fath", "49. Al-Hujurat", "50. Qaf",
     "51. Az-Zariyat", "52. At-Tur", "53. An-Najm", "54. Al-Qamar", "55. Ar-Rahman",
     "56. Al-Waqi'ah", "57. Al-Hadid", "58. Al-Mujadilah", "59. Al-Hasyr", "60. Al-Mumtahanah",
     "61. As-Saff", "62. Al-Jumu'ah", "63. Al-Munafiqun", "64. At-Taghabun", "65. At-Talaq",
@@ -50,10 +50,12 @@ with st.form(key='form_raport', clear_on_submit=True):
     nama = st.text_input("Nama Santri:", placeholder="Ketik nama di sini...")
     juz_pilihan = st.selectbox("Pilih Juz:", options=daftar_juz)
     surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
-    ayat = st.text_input("Ayat:", placeholder="Contoh: 1-10, atau Ayat Akhir")
     
-    # Dropdown penilaian kelancaran hafalan
-    nilai_kelancaran = st.selectbox("Kelancaran Hafalan:", options=["Sangat Lancar (A)", "Lancar (B)", "Cukup (C)", "Kurang (D)"])
+    # Keterangan ayat (misal: "1-15")
+    ayat = st.text_input("Detail Ayat:", placeholder="Contoh: 1-10, atau Ayat Akhir")
+    
+    # INPUTAN ANGKA UNTUK SISTEM PENILAIAN OTOMATIS
+    jumlah_ayat = st.number_input("Jumlah Ayat yang Dihafal (Angka):", min_value=1, max_value=300, step=1)
     
     submit_button = st.form_submit_button(label='SIMPAN NILAI')
 
@@ -61,24 +63,27 @@ if submit_button:
     if nama == "":
         st.error("Nama santri gak boleh kosong, bro!")
     elif ayat == "":
-        st.error("Kolom Ayat harus diisi, bro!")
+        st.error("Kolom Detail Ayat harus diisi, bro!")
     else:
-        # --- LOGIKA KATA-KATA MOTIVASI OTOMATIS ---
-        if nilai_kelancaran == "Sangat Lancar (A)":
+        # --- PROSES PENILAIAN OTOMATIS BERDASARKAN JUMLAH AYAT ---
+        if jumlah_ayat > 20:
+            nilai_kelancaran = "Sangat Lancar (A)"
             catatan_selesai = "Masya Allah, tingkatkan terus prestasimu!"
-        elif nilai_kelancaran == "Lancar (B)":
+        elif 11 <= jumlah_ayat <= 20:
+            nilai_kelancaran = "Lancar (B)"
             catatan_selesai = "Alhamdulillah, semangat lagi ya ngafalin nya!"
-        elif nilai_kelancaran == "Cukup (C)":
-            catatan_selesai = "Bagus, perbanyak murajaah lagi di rumah ya."
         else:
-            catatan_selesai = ""
+            nilai_kelancaran = "Cukup (C)"
+            catatan_selesai = "Bagus, perbanyak murajaah lagi di rumah ya."
+        # --------------------------------------------------------
             
         # Proses Simpan ke Excel MDTA
         data_baru = {
             "Nama Santri": [nama],
             "Pilih Juz": [juz_pilihan],
             "Nama Surah": [surah_pilihan],
-            "Ayat": [ayat],
+            "Detail Ayat": [ayat],
+            "Jumlah Ayat": [jumlah_ayat],
             "Nilai": [nilai_kelancaran],
             "Setoran Hafalan Santri MDTA": [catatan_selesai]
         }
@@ -91,29 +96,11 @@ if submit_button:
         else:
             df_baru.to_excel(nama_file, index=False)
             
-        # --- EFEK SURPRISE BALON TERBANG ---
+        # --- EFEK KEJUTAN SURPRISE BALON ---
         st.success(f"Data {nama} berhasil disimpan!")
-        st.balloons()  # Ini yang bikin efek kejutan balon langsung muncul, bro!
+        st.balloons()
         
-        # Tampilkan Preview Hasil Inputan di Layar
+        # Tampilkan Preview Hasil Sistem Otomatis di Layar Web
         st.markdown(f"**Nama Santri:** {nama}")
-        st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat}")
-        st.markdown(f"**Hasil Kelancaran:** {nilai_kelancaran}")
-        
-        if catatan_selesai != "":
-            st.markdown(f"**Setoran Hafalan Santri MDTA:** *\"{catatan_selesai}\"*")
-
-# --- TOMBOL DOWNLOAD DATA EXCEL ---
-st.write("---")
-st.subheader("📂 Download Data")
-
-if os.path.exists(nama_file):
-    with open(nama_file, "rb") as file:
-        st.download_button(
-            label="📥 DOWNLOAD FILE EXCEL KE HP",
-            data=file,
-            file_name="rekap_raport_mdta.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-else:
-    st.info("Belum ada data yang disimpan untuk di-download, bro.")
+        st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat} ({jumlah_ayat} Ayat)")
+        st.markdown(f"**Hasil Kelancaran Otomatis:** {nilai_kelancaran
