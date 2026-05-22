@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import re
 
 # Set judul halaman web (muncul di tab browser & pratinjau WA)
 st.set_page_config(page_title="Hafalan Santri MDTA", page_icon="📝", layout="centered")
@@ -51,11 +52,8 @@ with st.form(key='form_raport', clear_on_submit=True):
     juz_pilihan = st.selectbox("Pilih Juz:", options=daftar_juz)
     surah_pilihan = st.selectbox("Nama Surah:", options=daftar_surat)
     
-    # Keterangan detail ayat (misal: "1-15")
-    ayat = st.text_input("Detail Ayat:", placeholder="Contoh: 1-10, atau Ayat Akhir")
-    
-    # Input jumlah ayat berupa angka untuk penilaian otomatis
-    jumlah_ayat = st.number_input("Jumlah Ayat yang Dihafal (Angka):", min_value=1, max_value=300, step=1)
+    # Keterangan detail ayat (Sistem akan menghitung otomatis dari sini)
+    ayat = st.text_input("Detail Ayat:", placeholder="Contoh input: 1-7, 1-15, atau 1-25")
     
     submit_button = st.form_submit_button(label='SIMPAN NILAI')
 
@@ -65,7 +63,20 @@ if submit_button:
     elif ayat == "":
         st.error("Kolom Detail Ayat harus diisi, bro!")
     else:
-        # --- PROSES PENILAIAN OTOMATIS BERDASARKAN ANGKA JUMLAH AYAT ---
+        # --- LOGIKA MENGHITUNG JUMLAH AYAT OTOMATIS DARI TEKS ---
+        jumlah_ayat = 1 # Nilai default awal jika ketik teks biasa
+        
+        # Mencari angka menggunakan rumus regex (misal user ketik "1-15" atau "1 - 15")
+        match = re.findall(r'\d+', ayat)
+        if len(match) >= 2:
+            awal = int(match[0])
+            akhir = int(match[1])
+            if akhir >= awal:
+                jumlah_ayat = (akhir - awal) + 1
+        elif len(match) == 1:
+            jumlah_ayat = 1
+
+        # --- PROSES PENILAIAN OTOMATIS BERDASARKAN HASIL HITUNGAN ---
         if jumlah_ayat > 20:
             nilai_kelancaran = "Sangat Lancar (A)"
             catatan_selesai = "Masya Allah, tingkatkan terus prestasimu!"
@@ -101,7 +112,7 @@ if submit_button:
         
         # Tampilkan Preview Hasil Sistem Otomatis di Layar Web
         st.markdown(f"**Nama Santri:** {nama}")
-        st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat} ({jumlah_ayat} Ayat)")
+        st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat} ({jumlah_ayat} Ayat Dihafal)")
         st.markdown(f"**Hasil Kelancaran Otomatis:** {nilai_kelancaran}")
         st.markdown(f"**Setoran Hafalan Santri MDTA:** *\"{catatan_selesai}\"*")
 
