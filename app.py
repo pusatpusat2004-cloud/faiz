@@ -114,6 +114,53 @@ if os.path.exists(nama_file):
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 else:
+    st.info("Belum ada data yang disimpan untuk di-download, bro.")        elif nilai_kelancaran == "Cukup (C)":
+            catatan_motivasi = "Bagus, perbanyak murajaah lagi di rumah ya."
+        else:
+            catatan_motivasi = "Kurang semangat ni, yuk lebih giat lagi setorannya!"
+        # --------------------------------------------------------------
+            
+        # Proses Simpan ke Excel dengan Format Kolom Baru
+        data_baru = {
+            "Nama Santri": [nama],
+            "Pilih Juz": [juz_pilihan],
+            "Nama Surah": [surah_pilihan],
+            "Ayat": [ayat],
+            "Nilai": [nilai_kelancaran],
+            "Catatan Motivasi": [catatan_motivasi]
+        }
+        df_baru = pd.DataFrame(data_baru)
+        
+        if os.path.exists(nama_file):
+            df_lama = pd.read_excel(nama_file)
+            df_total = pd.concat([df_lama, df_baru], ignore_index=True)
+            df_total.to_excel(nama_file, index=False)
+        else:
+            df_baru.to_excel(nama_file, index=False)
+            
+        # Tampilkan Notifikasi Sukses
+        st.success(f"Data {nama} berhasil disimpan!")
+        st.balloons() 
+        
+        # Tampilkan Preview Hasil Inputan Baru di Layar
+        st.markdown(f"**Nama Santri:** {nama}")
+        st.markdown(f"**Juz:** {juz_pilihan} | **Surah:** {surah_pilihan} | **Ayat:** {ayat}")
+        st.markdown(f"**Hasil Kelancaran:** {nilai_kelancaran}")
+        st.markdown(f"**Pesan Motivasi:** *\"{catatan_motivasi}\"*")
+
+# --- TOMBOL DOWNLOAD UNTUK HP/USER ---
+st.write("---")
+st.subheader("📂 Download Data")
+
+if os.path.exists(nama_file):
+    with open(nama_file, "rb") as file:
+        st.download_button(
+            label="📥 DOWNLOAD FILE EXCEL KE HP",
+            data=file,
+            file_name="rekap_raport_rqik.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+else:
     st.info("Belum ada data yang disimpan untuk di-download, bro.")    "111. Al-Masad", "112. Al-Ikhlas", "113. Al-Falaq", "114. An-Nas"
 ]
 
